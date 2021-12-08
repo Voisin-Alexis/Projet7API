@@ -30,6 +30,7 @@ import json
 import requests
 #from waitress import serve
 import pickle
+from gevent.pywsgi import WSGIServer
 
 
 
@@ -144,4 +145,5 @@ def predict():
 
 if __name__ == '__main__':
     #app.run(debug=True)
-    app.run(threaded=True)
+    http_server = WSGIServer(('', 5000), app)
+    http_server.serve_forever()
