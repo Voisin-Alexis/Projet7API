@@ -52,7 +52,7 @@ dfIdClientIndex = joblib.load(cheminFichierJoblib + 'dfIdClientIndex.joblib')
 
 app = Flask(__name__)
 app.title = "Projet 7"  # Assigning title to be displayed on tab
-server = app.server
+#server = app.server
 
 # app = dash.Dash(__name__, server=server)
 
