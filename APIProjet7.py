@@ -9,36 +9,29 @@ import plotly.graph_objs as go
 from dash.dependencies import Input, Output
 import numpy as np
 import math
-
 import matplotlib.pyplot as plt
 import seaborn as sns
-
 # !pip install dash_daq
 import dash_daq as daq
-
 import shap
-
 from sklearn import metrics
 from sklearn.metrics import mean_absolute_error as mae
 from sklearn.metrics import mean_squared_error, accuracy_score
 from sklearn.metrics import roc_auc_score, precision_score, recall_score, roc_curve, fbeta_score, confusion_matrix, auc
-
 import plotly.figure_factory as ff
-
 import joblib
 from joblib import load
-
 import base64
 from PIL import Image
-
 from shap.plots._force_matplotlib import draw_additive_plot
 from dash import dash_table
-
 from flask import Flask, render_template, jsonify, request
 import json
 import requests
-
+from waitress import serve
 import pickle
+
+
 
 cheminFichierJoblib = './fichierJoblib/'
 
@@ -52,9 +45,6 @@ dfIdClientIndex = joblib.load(cheminFichierJoblib + 'dfIdClientIndex.joblib')
 
 app = Flask(__name__)
 app.title = "Projet 7"  # Assigning title to be displayed on tab
-#server = app.server
-
-# app = dash.Dash(__name__, server=server)
 
 @app.route('/')
 def listeID():
@@ -153,4 +143,5 @@ def predict():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    #app.run(debug=True)
+    serve(app, host='0.0.0.0')
