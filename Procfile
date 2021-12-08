@@ -1,1 +1,1 @@
-web: gunicorn APIProjet7:server
+web: gunicorn APIProjet7:app
