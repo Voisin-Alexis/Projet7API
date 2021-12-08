@@ -28,7 +28,7 @@ from dash import dash_table
 from flask import Flask, render_template, jsonify, request
 import json
 import requests
-from waitress import serve
+#from waitress import serve
 import pickle
 
 
