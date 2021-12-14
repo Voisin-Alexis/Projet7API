@@ -13,3 +13,4 @@ click == 7.1.2
 pip == 21.3.1
 gevent == 20.9.0
 gunicorn == 20.1.0
+lightgbm == 3.3.1
