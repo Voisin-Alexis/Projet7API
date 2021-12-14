@@ -9,30 +9,36 @@ import plotly.graph_objs as go
 from dash.dependencies import Input, Output
 import numpy as np
 import math
+
 import matplotlib.pyplot as plt
 import seaborn as sns
+
 # !pip install dash_daq
 import dash_daq as daq
+
 import shap
+
 from sklearn import metrics
 from sklearn.metrics import mean_absolute_error as mae
 from sklearn.metrics import mean_squared_error, accuracy_score
 from sklearn.metrics import roc_auc_score, precision_score, recall_score, roc_curve, fbeta_score, confusion_matrix, auc
+
 import plotly.figure_factory as ff
+
 import joblib
 from joblib import load
+
 import base64
 from PIL import Image
+
 from shap.plots._force_matplotlib import draw_additive_plot
 from dash import dash_table
+
 from flask import Flask, render_template, jsonify, request
 import json
 import requests
-#from waitress import serve
+
 import pickle
-from gevent.pywsgi import WSGIServer
-
-
 
 cheminFichierJoblib = './fichierJoblib/'
 
@@ -43,14 +49,28 @@ X_testID2 = joblib.load(cheminFichierJoblib + 'X_testID2.joblib')
 dataframeInfoXTest2 = joblib.load(cheminFichierJoblib + 'dataframeInfoXTest2.joblib')
 listeIndexSort = joblib.load(cheminFichierJoblib + 'listeIndexSort.joblib')
 dfIdClientIndex = joblib.load(cheminFichierJoblib + 'dfIdClientIndex.joblib')
+listeIndexASuppTest1500 = joblib.load(cheminFichierJoblib + 'listeIndexASuppTest1500.joblib')
+
+dataframeInfoXTest1500 = dataframeInfoXTest2[0:1500].copy()
+listeIndexTest1500 = dataframeInfoXTest1500.index.tolist()
+
+X_test1500 = joblib.load(cheminFichierJoblib + 'X_test1500.joblib')
+listeidSort = joblib.load(cheminFichierJoblib + 'listeidSort.joblib')
+columnID = np.array(['idClient'])
+dfIdClientIndex1500 = pd.DataFrame(listeidSort, columns = columnID)
+
+dataframeInfoXTest2.drop(listeIndexASuppTest1500, inplace = True)
 
 app = Flask(__name__)
 app.title = "Projet 7"  # Assigning title to be displayed on tab
+server = app.server
+
+# app = dash.Dash(__name__, server=server)
 
 @app.route('/')
 def listeID():
     data = []  # On initialise une liste vide
-    for id in listeIndexSort:
+    for id in listeidSort:
         idClient = id
         data.append(idClient)
 
@@ -116,17 +136,19 @@ def predict():
     else:
         return "Error: No id field provided. Please specify an id."
 
-    index = dfIdClientIndex[dfIdClientIndex['idClient'] == user_id].index
+    index = dfIdClientIndex1500[dfIdClientIndex1500['idClient'] == user_id].index
     index = int(index[0])
 
-    # pkl_file = open('lgbmHPSeuil.pkl', 'rb')
-    # lgbmHPSeuil = pickle.load(pkl_file)
-    # y_predLgbmHPSeuil = lgbmHPSeuil.predict_proba(X_test)[::,1]
-    # prediction = lgbmHPSeuil.predict(X_test)
-    # predictionProba = lgbmHPSeuil.predict_proba(X_test)[::,1]
+    pkl_file = open(cheminFichierJoblib + 'lgbmHPSeuil.pkl', 'rb')
+    lgbmHPSeuil = pickle.load(pkl_file)
 
-    prediction = predictionStreamlit
-    predictionProba = predictionProbaStreamlit
+    y_predLgbmHPSeuil = lgbmHPSeuil.predict_proba(X_test1500)[::, 1]
+    prediction = lgbmHPSeuil.predict(X_test1500)
+
+    predictionProba = lgbmHPSeuil.predict_proba(X_test1500)[::, 1]
+
+    # prediction = predictionStreamlit
+    # predictionProba = predictionProbaStreamlit          
 
     y_predSeuil = np.zeros(prediction.shape)
     y_predSeuil[prediction > 0.1] = 1
@@ -138,12 +160,10 @@ def predict():
 
     # round the predict proba value and set to new variable
     confidence = round(predictionProba[index], 3)
-    output = {'prediction': pred_text, 'confidence': confidence}
+    output = [{'prediction': pred_text, 'confidence': confidence}]
 
-    return output
+    return jsonify(output)
 
 
 if __name__ == '__main__':
     app.run(debug=True)
-    #http_server = WSGIServer(('0.0.0.0', 5000), app)
-    #http_server.serve_forever()
