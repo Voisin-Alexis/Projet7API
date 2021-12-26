@@ -37,7 +37,7 @@ predictionProbaStreamlit = joblib.load(cheminFichierJoblib + 'predictionProbaStr
 
 X_testID2 = joblib.load(cheminFichierJoblib + 'X_testID2.joblib')
 dataframeInfoXTest2 = joblib.load(cheminFichierJoblib + 'dataframeInfoXTest2.joblib')
-listeIndexASuppTest1500 = joblib.load(r'C:\Users\Alexis\listeIndexASuppTest1500.joblib')
+listeIndexASuppTest1500 = joblib.load(cheminFichierJoblib + 'listeIndexASuppTest1500.joblib')
 
 dataframeInfoXTest1500 = dataframeInfoXTest2[0:1500].copy()
 listeIndexTest1500 = dataframeInfoXTest1500.index.tolist()
