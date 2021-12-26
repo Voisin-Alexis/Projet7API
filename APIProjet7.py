@@ -138,9 +138,9 @@ def predict():
     y_predSeuil[prediction > 0.1] = 1
            
     if y_predSeuil[index] == 0:
-        pred_text = 'Negative'
-    else:
         pred_text = 'Positive'
+    else:
+        pred_text = 'Négatif'
  
     # round the predict proba value and set to new variable
     confidence = round(predictionProba[index], 3)
